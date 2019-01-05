@@ -1,22 +1,23 @@
 package com.demo;
 
-import com.myorm.XYZMySQLConnection;
+import com.vinaorm.MySQLConnection;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        String HOST = "localhost";
-        int PORT = 3306;
-        String DBNAME = "db";
 
-        XYZMySQLConnection connMySQL = new XYZMySQLConnection(HOST, PORT, DBNAME, "root", "admin");
-        Person person1 = new Person(3, "Simon", "Davison");
+        MySQLConnection.Builder mySQLConnectionBuilder = new MySQLConnection.Builder();
+        MySQLConnection conn = mySQLConnectionBuilder
+                                    .setHost("localhost")
+                                    .setPort(3306)
+                                    .setDbName("db")
+                                    .setUsername("root")
+                                    .setPassword("admin")
+                                    .build();
+        conn.open();
 
-        connMySQL.open();
+        conn.insert(new Person(5, "Nghia", "Nguyen"));
 
-        int result = connMySQL.insert(person1);
-        System.out.println(result);
-
-        connMySQL.close();
+        conn.close();
     }
 }

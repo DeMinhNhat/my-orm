@@ -1,6 +1,6 @@
 package com.demo;
 
-import com.myorm.annotations.*;
+import com.vinaorm.annotations.*;
 
 @Table(name="persons")
 public class Person {
@@ -20,7 +20,7 @@ public class Person {
         this.lname = lname;
     }
 
-    @Column(name="id", type=ColumnType.INT)
+    @Column(name="id", type=ColumnType.INTEGER)
     public int getId() {
         return id;
     }
@@ -29,7 +29,7 @@ public class Person {
         this.id = id;
     }
 
-    @Column(name="fname", type=ColumnType.CHAR)
+    @Column(name="fname", type=ColumnType.CHARACTER)
     public String getFname() {
         return fname;
     }
@@ -38,7 +38,7 @@ public class Person {
         this.fname = fname;
     }
 
-    @Column(name="lname", type=ColumnType.CHAR)
+    @Column(name="lname", type=ColumnType.CHARACTER)
     public String getLname() {
         return lname;
     }
