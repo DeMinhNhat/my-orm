@@ -2,7 +2,9 @@ package com.demo;
 
 import com.vinaorm.MySQLConnection;
 
-public class Main {
+import java.util.ArrayList;
+
+public class _Main {
 
     public static void main(String[] args) throws Exception {
 
@@ -16,7 +18,7 @@ public class Main {
                                     .build();
         conn.open();
 
-        conn.insert(new Person(5, "Nghia", "Nguyen"));
+        ArrayList<Person> rows = conn.select(Person.class, "HIHAHOHE");
 
         conn.close();
     }

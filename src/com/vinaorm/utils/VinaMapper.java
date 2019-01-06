@@ -1,6 +1,5 @@
 package com.vinaorm.utils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 public abstract class VinaMapper {
@@ -12,5 +11,6 @@ public abstract class VinaMapper {
     }
 
     public abstract String getTableName();
-    public abstract HashMap getColumnsAndValues() throws InvocationTargetException, IllegalAccessException;
+    public abstract HashMap getPrimaryColumn();
+    public abstract HashMap getColumnsAndValues();
 }

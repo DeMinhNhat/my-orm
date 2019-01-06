@@ -1,21 +1,22 @@
 package com.vinaorm;
 
-import com.vinaorm.statements.InsertStatement;
-import com.vinaorm.statements.VinaStatement;
+import com.vinaorm.statements.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
-public class MySQLConnection extends VinaConnection implements ExecuteUpdate {
+public class MySQLConnection extends VinaConnection implements ExecuteModify, ExecuteSelect {
 
     private String DB_URL;
     private String USERNAME;
     private String PASSWORD;
 
     private Connection conn = null;
+
 
     public static class Builder {
 
@@ -78,25 +79,32 @@ public class MySQLConnection extends VinaConnection implements ExecuteUpdate {
 
     @Override
     public int insert(Object obj) throws SQLException, InvocationTargetException, IllegalAccessException {
-        return executeUpdateStatement(new InsertStatement(obj));
+        return executeModifyStatement(new MySQLInsertStatement(obj));
     }
 
     @Override
-    public int update(Object obj, String whereClause) {
-        return 0;
+    public int update(Object obj, String whereClause) throws IllegalAccessException, SQLException, InvocationTargetException {
+        return executeModifyStatement(new MySQLUpdateStatement(obj, whereClause));
     }
 
     @Override
-    public int delete(String query) {
-        return 0;
+    public int delete(String tableName, String whereClause) throws IllegalAccessException, SQLException, InvocationTargetException {
+        return executeModifyStatement(new MySQLDeleteStatement(tableName, whereClause));
     }
 
     @Override
-    public int executeUpdateStatement(VinaStatement statement) throws SQLException, InvocationTargetException, IllegalAccessException {
+    public <T> ArrayList<T> select(Class<T> clazz, String statement) {
+        return executeSelectStatement(clazz, new MySQLSelectStatement(statement));
+    }
+
+    @Override
+    public int executeModifyStatement(ModifyStatement statement) throws SQLException, InvocationTargetException, IllegalAccessException {
         String sql = statement.buildQuery();
 
         if(sql == null)
             return 0;
+
+        System.out.println(sql);
 
         Statement stmt = conn.createStatement();
         int result = stmt.executeUpdate(sql);
@@ -106,5 +114,16 @@ public class MySQLConnection extends VinaConnection implements ExecuteUpdate {
                 stmt.close();
 
         return result;
+    }
+
+    @Override
+    public <T> ArrayList<T> executeSelectStatement(Class<T> clazz, MySQLSelectStatement statement) {
+        // clazz.getName() -> Tên Class để map
+        // statement.buildQuery() -> SQL Query
+        // Lẹt gô
+
+
+
+        return null;
     }
 }

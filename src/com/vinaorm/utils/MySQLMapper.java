@@ -1,6 +1,7 @@
 package com.vinaorm.utils;
 
 import com.vinaorm.annotations.Column;
+import com.vinaorm.annotations.PrimaryKey;
 import com.vinaorm.annotations.Table;
 
 import java.lang.reflect.InvocationTargetException;
@@ -9,28 +10,22 @@ import java.util.HashMap;
 
 public class MySQLMapper extends VinaMapper {
 
-    public MySQLMapper(Object obj) {
-        super(obj);
-    }
+    private String tableName = null;
+    private HashMap<String, String> mapColumnsValues = null;
+    private HashMap<String, String> primaryKey = null;
 
-    @Override
-    public String getTableName() {
+    public MySQLMapper(Object obj) throws InvocationTargetException, IllegalAccessException {
+        super(obj);
+
         Class c = obj.getClass();
 
-        if(!c.isAnnotationPresent(Table.class)) {
-            return null;
+        if(c.isAnnotationPresent(Table.class)) {
+            Table tableAnnotation = (Table) c.getAnnotation(Table.class);
+            this.tableName = tableAnnotation.name();
         }
 
-        Table tableAnnotation = (Table) c.getAnnotation(Table.class);
-
-        return tableAnnotation == null ? null : tableAnnotation.name();
-    }
-
-    @Override
-    public HashMap getColumnsAndValues() throws InvocationTargetException, IllegalAccessException {
-        Class c = obj.getClass();
-
-        HashMap<String, String> map = new HashMap<>();
+        this.mapColumnsValues = new HashMap<>();
+        this.primaryKey = new HashMap<>();
 
         Method[] methods = c.getMethods();
 
@@ -41,24 +36,43 @@ public class MySQLMapper extends VinaMapper {
                 String columnName = columnAnnotation.name();
                 String columnValue = "";
 
-                switch(columnAnnotation.type()) {
-                    case CHARACTER:
-                        columnValue = "\'" + method.invoke(this.obj) + "\'";
-                        break;
-                    case INTEGER:
-                        columnValue = String.valueOf(method.invoke(this.obj));
-                        break;
-                    case DECIMAL:
-                        columnValue = String.valueOf(method.invoke(this.obj));
-                        break;
-                    default:
-                        break;
+                if(method.invoke(this.obj) != null) {
+                    switch(columnAnnotation.type()) {
+                        case CHARACTER:
+                            columnValue = "\'" + method.invoke(this.obj) + "\'";
+                            break;
+                        case INTEGER:
+                            columnValue = String.valueOf(method.invoke(this.obj));
+                            break;
+                        case DECIMAL:
+                            columnValue = String.valueOf(method.invoke(this.obj));
+                            break;
+                        default:
+                            break;
+                    }
+
+                    mapColumnsValues.put(columnName, columnValue);
                 }
 
-                map.put(columnName, columnValue);
+                if(method.isAnnotationPresent(PrimaryKey.class)) {
+                    primaryKey.put(columnName, columnValue);
+                }
             }
         }
+    }
 
-        return map;
+    @Override
+    public String getTableName() {
+        return this.tableName;
+    }
+
+    @Override
+    public HashMap getPrimaryColumn() {
+        return this.mapColumnsValues;
+    }
+
+    @Override
+    public HashMap getColumnsAndValues() {
+        return this.mapColumnsValues;
     }
 }

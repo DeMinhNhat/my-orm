@@ -1,19 +1,25 @@
 package com.vinaorm.statements;
 
 import com.vinaorm.utils.MySQLMapper;
+import com.vinaorm.utils.VinaMapper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
-public class InsertStatement extends VinaStatement {
+public class MySQLInsertStatement extends ModifyStatement {
 
-    public InsertStatement(Object obj) {
+    public MySQLInsertStatement(Object obj) {
         super(obj);
     }
 
     @Override
+    public VinaMapper getMapper(Object obj) throws InvocationTargetException, IllegalAccessException {
+        return new MySQLMapper(obj);
+    }
+
+    @Override
     public String buildQuery() throws InvocationTargetException, IllegalAccessException {
-        MySQLMapper mapper = new MySQLMapper(obj);
+        MySQLMapper mapper = (MySQLMapper) getMapper(obj);
 
         String tableName = mapper.getTableName();
         HashMap<String , String> map = mapper.getColumnsAndValues();
