@@ -1,12 +1,11 @@
 package com.vinaorm;
 
 import com.vinaorm.statements.*;
+import com.vinaorm.utils.MapperFactory;
+import com.vinaorm.utils.MySQLMapper;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class MySQLConnection extends VinaConnection implements ExecuteModify, ExecuteSelect {
@@ -16,7 +15,6 @@ public class MySQLConnection extends VinaConnection implements ExecuteModify, Ex
     private String PASSWORD;
 
     private Connection conn = null;
-
 
     public static class Builder {
 
@@ -93,7 +91,7 @@ public class MySQLConnection extends VinaConnection implements ExecuteModify, Ex
     }
 
     @Override
-    public <T> ArrayList<T> select(Class<T> clazz, String statement) {
+    public <T> ArrayList<T> select(Class<T> clazz, String statement) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, SQLException {
         return executeSelectStatement(clazz, new MySQLSelectStatement(statement));
     }
 
@@ -117,13 +115,19 @@ public class MySQLConnection extends VinaConnection implements ExecuteModify, Ex
     }
 
     @Override
-    public <T> ArrayList<T> executeSelectStatement(Class<T> clazz, MySQLSelectStatement statement) {
-        // clazz.getName() -> Tên Class để map
-        // statement.buildQuery() -> SQL Query
-        // Lẹt gô
+    public <T> ArrayList<T> executeSelectStatement(Class<T> clazz, MySQLSelectStatement statement) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, SQLException {
+        String sql = statement.buildQuery();
 
+        if(sql == null)
+            return null;
 
+        System.out.println(sql);
 
-        return null;
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
+
+        MySQLMapper<T> mapper = (MySQLMapper<T>) MapperFactory.getMapper("mysql", clazz, rs);
+
+        return mapper.getEntities();
     }
 }

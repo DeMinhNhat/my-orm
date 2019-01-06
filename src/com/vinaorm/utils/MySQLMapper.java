@@ -1,78 +1,55 @@
 package com.vinaorm.utils;
 
 import com.vinaorm.annotations.Column;
-import com.vinaorm.annotations.PrimaryKey;
-import com.vinaorm.annotations.Table;
+import com.vinaorm.annotations.OneToMany;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
-public class MySQLMapper extends VinaMapper {
+public class MySQLMapper<T> extends Mapper<T> {
 
-    private String tableName = null;
-    private HashMap<String, String> mapColumnsValues = null;
-    private HashMap<String, String> primaryKey = null;
+    private ResultSet rs;
 
-    public MySQLMapper(Object obj) throws InvocationTargetException, IllegalAccessException {
-        super(obj);
+    public MySQLMapper(Class<T> clazz, ResultSet rs) {
+        super(clazz);
+        this.rs = rs;
+    }
 
-        Class c = obj.getClass();
+    @Override
+    public ArrayList<T> getEntities() throws NoSuchMethodException, SQLException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        ArrayList<T> result = new ArrayList<>();
 
-        if(c.isAnnotationPresent(Table.class)) {
-            Table tableAnnotation = (Table) c.getAnnotation(Table.class);
-            this.tableName = tableAnnotation.name();
-        }
+        while(rs.next()) {
+            T temp = clazz.getDeclaredConstructor().newInstance();
 
-        this.mapColumnsValues = new HashMap<>();
-        this.primaryKey = new HashMap<>();
+            Field[] fields = clazz.getFields();
 
-        Method[] methods = c.getMethods();
+            for(Field field : fields) {
+                if(field.isAnnotationPresent(Column.class)) {
+                    Column columnAnnotation = field.getAnnotation(Column.class);
+                    String columnName = columnAnnotation.name();
 
-        for(Method method : methods) {
-            if(method.isAnnotationPresent(Column.class)) {
-                Column columnAnnotation = method.getAnnotation(Column.class);
-
-                String columnName = columnAnnotation.name();
-                String columnValue = "";
-
-                if(method.invoke(this.obj) != null) {
                     switch(columnAnnotation.type()) {
                         case CHARACTER:
-                            columnValue = "\'" + method.invoke(this.obj) + "\'";
+                            field.set(temp, rs.getString(columnName));
                             break;
                         case INTEGER:
-                            columnValue = String.valueOf(method.invoke(this.obj));
+                            field.set(temp, rs.getInt(columnName));
                             break;
                         case DECIMAL:
-                            columnValue = String.valueOf(method.invoke(this.obj));
+                            field.set(temp, rs.getDouble(columnName));
                             break;
                         default:
                             break;
                     }
-
-                    mapColumnsValues.put(columnName, columnValue);
-                }
-
-                if(method.isAnnotationPresent(PrimaryKey.class)) {
-                    primaryKey.put(columnName, columnValue);
                 }
             }
+            result.add(temp);
         }
-    }
+        return result;
 
-    @Override
-    public String getTableName() {
-        return this.tableName;
-    }
-
-    @Override
-    public HashMap getPrimaryColumn() {
-        return this.mapColumnsValues;
-    }
-
-    @Override
-    public HashMap getColumnsAndValues() {
-        return this.mapColumnsValues;
     }
 }

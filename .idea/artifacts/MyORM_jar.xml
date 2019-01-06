@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="MyORM:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/MyORM_jar</output-path>
+    <root id="archive" name="MyORM.jar">
+      <element id="library" level="project" name="mysql-connector-java-5.1.47" />
+      <element id="module-output" name="MyORM" />
+    </root>
+  </artifact>
+</component>

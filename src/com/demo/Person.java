@@ -18,6 +18,11 @@ public class Person {
     @Column(name="class", type=ColumnType.CHARACTER)
     public  String classId;
 
+    @ManyToOne(tableName="classes")
+    public Class zclass;
+
+    public Person() {}
+
     public Person(String id, String fname, String lname, String classId) {
         this.id = id;
         this.fname = fname;

@@ -1,8 +1,6 @@
 package com.vinaorm.statements;
 
-import com.vinaorm.utils.VinaMapper;
-
-import java.lang.reflect.InvocationTargetException;
+import com.vinaorm.utils.EntityParser;
 
 public abstract class ModifyStatement implements VinaStatement {
 
@@ -16,5 +14,5 @@ public abstract class ModifyStatement implements VinaStatement {
         this.obj = obj;
     }
 
-    public abstract VinaMapper getMapper(Object obj) throws InvocationTargetException, IllegalAccessException;
+    public abstract EntityParser getParser(Object obj) throws IllegalAccessException;
 }

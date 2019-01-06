@@ -11,5 +11,5 @@ public abstract class VinaConnection {
     public abstract int insert(Object obj) throws SQLException, InvocationTargetException, IllegalAccessException;
     public abstract int update(Object obj, String whereClause) throws IllegalAccessException, SQLException, InvocationTargetException;
     public abstract int delete(String tableName, String whereClause) throws IllegalAccessException, SQLException, InvocationTargetException;
-    public abstract <T> ArrayList<T> select(Class<T> clazz, String selectStatement);
+    public abstract <T> ArrayList<T> select(Class<T> clazz, String selectStatement) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, SQLException;
 }

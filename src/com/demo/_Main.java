@@ -18,7 +18,12 @@ public class _Main {
                                     .build();
         conn.open();
 
-        ArrayList<Person> rows = conn.select(Person.class, "HIHAHOHE");
+        ArrayList<Teacher> list = conn.select(Teacher.class, "SELECT * FROM teacher");
+        System.out.println(list.size());
+
+        for(int i = 0 ; i < list.size(); i++) {
+            System.out.println(list.get(i).height + " " + list.get(i).name);
+        }
 
         conn.close();
     }

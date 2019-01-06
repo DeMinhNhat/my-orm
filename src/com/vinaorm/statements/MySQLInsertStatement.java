@@ -1,7 +1,6 @@
 package com.vinaorm.statements;
 
-import com.vinaorm.utils.MySQLMapper;
-import com.vinaorm.utils.VinaMapper;
+import com.vinaorm.utils.EntityParser;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -13,16 +12,16 @@ public class MySQLInsertStatement extends ModifyStatement {
     }
 
     @Override
-    public VinaMapper getMapper(Object obj) throws InvocationTargetException, IllegalAccessException {
-        return new MySQLMapper(obj);
+    public EntityParser getParser(Object obj) throws IllegalAccessException {
+        return new EntityParser(obj);
     }
 
     @Override
     public String buildQuery() throws InvocationTargetException, IllegalAccessException {
-        MySQLMapper mapper = (MySQLMapper) getMapper(obj);
+        EntityParser parser = getParser(obj);
 
-        String tableName = mapper.getTableName();
-        HashMap<String , String> map = mapper.getColumnsAndValues();
+        String tableName = parser.getTableName();
+        HashMap<String , String> map = parser.getColumnsAndValues();
 
         if(map.size() != 0) {
             int i = 1;

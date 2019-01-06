@@ -1,6 +1,7 @@
 package com.vinaorm.statements;
 
-import com.vinaorm.utils.VinaMapper;
+
+import com.vinaorm.utils.EntityParser;
 
 public class MySQLDeleteStatement extends ModifyStatement {
 
@@ -13,7 +14,7 @@ public class MySQLDeleteStatement extends ModifyStatement {
     }
 
     @Override
-    public VinaMapper getMapper(Object obj) {
+    public EntityParser getParser(Object obj) {
         return null;
     }
 
@@ -21,6 +22,4 @@ public class MySQLDeleteStatement extends ModifyStatement {
     public String buildQuery() {
         return String.format("DELETE FROM %s WHERE %s", this.tableName, this.whereClause);
     }
-
-
 }
