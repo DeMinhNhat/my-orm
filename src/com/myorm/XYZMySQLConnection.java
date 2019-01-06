@@ -17,10 +17,19 @@ public class XYZMySQLConnection extends XYZConnection {
 
     private Connection conn = null;
 
-    public XYZMySQLConnection(String HOST, int PORT, String DBNAME, String USER, String PASSWORD) {
+    private static XYZMySQLConnection instance;
+
+    private XYZMySQLConnection(String HOST, int PORT, String DBNAME, String USER, String PASSWORD) {
         this.DB_URL = String.format("jdbc:mysql://%s:%d/%s?autoReconnect=true&useSSL=false", HOST, PORT, DBNAME);
         this.USER = USER;
         this.PASSWORD = PASSWORD;
+    }
+
+    public static XYZMySQLConnection getInstance(String HOST, int PORT, String DBNAME, String USER, String PASSWORD) {
+        if (instance == null) {
+            instance = new XYZMySQLConnection(HOST, PORT, DBNAME, USER, PASSWORD);
+        }
+        return instance;
     }
 
     @Override
@@ -31,7 +40,7 @@ public class XYZMySQLConnection extends XYZConnection {
 
     @Override
     public void close() throws SQLException {
-        if(this.conn != null && !this.conn.isClosed()) {
+        if (this.conn != null && !this.conn.isClosed()) {
             this.conn.close();
             this.conn = null;
         }
@@ -54,6 +63,5 @@ public class XYZMySQLConnection extends XYZConnection {
         MySQLDelete delete = new MySQLDelete(clazz, whereClause);
         return delete.executeUpdate(this.conn);
     }
-
 
 }
